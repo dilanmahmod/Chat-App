@@ -1,0 +1,53 @@
+.navigationswrapper {
+    position: relative;
+}
+
+.fixed {
+    position: fixed;
+}
+
+.button {
+    background-color: #4f46e5; /* Lila bakgrundsfärg */
+    color: white; /* Vit textfärg */
+    padding: 10px 15px; /* Inre avstånd */
+    border: none; /* Ingen kantlinje */
+    border-radius: 5px; /* Rundade hörn */
+    cursor: pointer; /* Hand-pekare vid hover */
+    margin: 10px; /* Marginal mellan knappar */
+}
+
+.button:hover {
+    background-color: #4338ca; /* Mörkare lila vid hover */
+}
+
+.menu {
+    background-color: #1e3a8a; /* Mörk blå färg */
+    color: white; /* Vit textfärg */
+    position: fixed; /* Fixa menyn */
+    top: 0; /* Längst upp */
+    left: 0; /* Längst till vänster */
+    width: 200px; /* Bredde på menyn */
+    height: 100%; /* Full höjd */
+    transform: translateX(-100%); /* Dölja menyn */
+    transition: transform 0.3s; /* Övergångseffekt */
+}
+
+.menu.visible {
+    transform: translateX(0); /* Visa menyn */
+}
+
+nav {
+    padding: 20px; /* Inre avstånd i navigeringen */
+}
+
+.link {
+    display: block; /* Gör länkar blockelement */
+    padding: 10px; /* Inre avstånd för länkar */
+    color: white; /* Vit textfärg */
+    text-decoration: none; /* Ingen understrykning */
+    margin-bottom: 10px; /* Avstånd mellan länkar */
+}
+
+.link:hover {
+    background-color: #2563eb; /* Mörkare blå vid hover */
+}

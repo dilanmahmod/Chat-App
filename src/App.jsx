@@ -1,28 +1,89 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Register from './components/Register';
+import SideNav from './components/SideNav';
 import Login from './components/Login';
 import Chat from './components/Chat';
-import Home from './components/Home';
-import ProtectedRoute from './components/ProtectedRoute';
-import SideNav from './components/SideNav';
+import Register from './components/Register';
+import CsrfTokenProcider from './components/CsrfTokenProvider';
+import './index.css';
 
-function App() {
-  const token = localStorage.getItem('token');
+// Komponent för att skydda rutter
+const AuthenticatedRoute = ({ component, isAuthenticated }) => {
+  return isAuthenticated ? component : <Navigate to="/login" />;
+};
+
+// Komponent för att visa felmeddelanden
+const ErrorDisplay = ({ message }) => {
+  if (!message) return null;
+  return (
+    <div style={{ color: 'red', textAlign: 'center', margin: '1em 0' }}>
+      <p>{message}</p>
+    </div>
+  );
+};
+
+// Komponent för att visa laddningsstatus
+const Loader = () => (
+  <div style={{ textAlign: 'center', padding: '1em' }}>
+    <p>Laddar...</p>
+  </div>
+);
+
+const App = () => {
+  const [authToken, setAuthToken] = useState(localStorage.getItem('token') || '');
+  const [currentUserId, setCurrentUserId] = useState(localStorage.getItem('userId') || '');
+  const [csrfToken, setCsrfToken] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Hantera lagring av token och userId direkt i useState-initialiseringen
+  useEffect(() => {
+    localStorage.setItem('token', authToken);
+    localStorage.setItem('userId', currentUserId);
+  }, [authToken, currentUserId]);
+
+  // Hämta CSRF-token med felhantering och laddningsstatus
+  useEffect(() => {
+    const retrieveCsrfToken = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('https://chatify-api.up.railway.app/csrf', {
+          method: 'PATCH',
+        });
+        if (!response.ok) throw new Error('Kunde inte hämta CSRF-token');
+        const data = await response.json();
+        setCsrfToken(data.csrfToken);
+      } catch (error) {
+        setErrorMessage(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    retrieveCsrfToken();
+  }, []);
+
+  // Kontrollera laddningsstatus
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
-    <Router>
-      <div>
-        <SideNav />
+    <div>
+      <ErrorDisplay message={errorMessage} />
+      <Router>
+        <SideNav token={authToken} setToken={setAuthToken} />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/register" element={token ? <Navigate to="/chat" /> : <Register />} />
-          <Route path="/login" element={token ? <Navigate to="/chat" /> : <Login />} />
-          <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+          <Route path="/" element={<Register csrfToken={csrfToken} />} />
+          <Route path="/login" element={<Login setToken={setAuthToken} setUserId={setCurrentUserId} csrfToken={csrfToken} />} />
+          <Route path="/chat" element={<AuthenticatedRoute component={<Chat token={authToken} userId={currentUserId} />} isAuthenticated={!!authToken} />} />
+          {/* Omdirigera till inloggning om ingen token finns */}
+          <Route path="*" element={<Navigate to={authToken ? "/chat" : "/login"} />} />
         </Routes>
-      </div>
-    </Router>
+      </Router>
+    </div>
   );
-}
+};
 
 export default App;
+

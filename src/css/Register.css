@@ -1,0 +1,131 @@
+/* Register.css */
+.min-h-screen {
+    min-height: 100vh; /* Gör att komponenten fyller hela höjden */
+  }
+  
+  .flex {
+    display: flex; /* Flexbox layout */
+  }
+  
+  .items-center {
+    align-items: center; /* Centrerar innehåll vertikalt */
+  }
+  
+  .justify-center {
+    justify-content: center; /* Centrerar innehåll horisontellt */
+  }
+  
+  .bg-cover {
+    background-size: cover; /* Fyller bakgrunden utan att deformera */
+  }
+  
+  .bg-center {
+    background-position: center; /* Centrerar bakgrundsbilden */
+  }
+  
+  .max-w-md {
+    max-width: 28rem; /* Sätter max bredd */
+  }
+  
+  .p-8 {
+    padding: 2rem; /* Ger padding */
+  }
+  
+  .rounded-lg {
+    border-radius: 0.5rem; /* Rundar hörnen */
+  }
+  
+  .bg-opacity-60 {
+    background-color: rgba(255, 255, 255, 0.6); /* Halvgenomskinlig bakgrund */
+  }
+  
+  .backdrop-blur-lg {
+    backdrop-filter: blur(10px); /* Lägger till en oskarp bakgrundseffekt */
+  }
+  
+  .shadow-lg {
+    box-shadow: 0 4px 6px rgba(223, 70, 70, 0.1); /* Lägger till en skugga */
+  }
+  
+  .text-2xl {
+    font-size: 1.5rem; /* Större textstorlek */
+  }
+  
+  .text-center {
+    text-align: center; /* Centrerar text */
+  }
+  
+  .font-semibold {
+    font-weight: 600; /* Semibold text */
+  }
+  
+  .mb-6 {
+    margin-bottom: 1.5rem; /* Marginal nedåt */
+  }
+  
+  .text-red-600 {
+    color: #c53030; /* Röd färg */
+  }
+  
+  .text-green-500 {
+    color: #48bb78; /* Grön färg */
+  }
+  
+  .text-blue-600 {
+    color: #3182ce; /* Blå färg */
+  }
+  
+  .underline {
+    text-decoration: underline; /* Understrykning */
+  }
+  
+  .space-y-4 > * + * {
+    margin-top: 1rem; /* Avstånd mellan formulärfält */
+  }
+  
+  .p-3 {
+    padding: 0.75rem; /* Padding för formulärfält */
+  }
+  
+  .rounded-full {
+    border-radius: 9999px; /* Full rundning */
+  }
+  
+  .bg-gray-800 {
+    background-color: #2d3748; /* Mörkgrå bakgrund */
+  }
+  
+  .text-white {
+    color: #fff; /* Vit text */
+  }
+  
+  .placeholder-gray-400 {
+    color: #cbd5e0; /* Grå färg för platshållare */
+  }
+  
+  .border {
+    border-width: 1px; /* Sätter kantlinje */
+  }
+  
+  .border-gray-400 {
+    border-color: #cbd5e0; /* Grå kantlinje */
+  }
+  
+  .w-full {
+    width: 100%; /* 100% bredd */
+  }
+  
+  .py-3 {
+    padding-top: 0.75rem; /* Padding vertikalt */
+    padding-bottom: 0.75rem; /* Padding vertikalt */
+  }
+  
+  .bg-blue-600 {
+    background-color: #3182ce; /* Blå bakgrund */
+  }
+  
+  .hover\:bg-blue-700:hover {
+    background-color: #2b6cb0; /* Mörkare blå vid hover */
+  }
+
+  

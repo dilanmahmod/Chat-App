@@ -103,12 +103,14 @@ const Chat = ({ authToken }) => {
 
   const handleSendChatMessage = async () => {
     if (!inputMessage.trim()) return;
+    const token = localStorage.getItem('authToken');
+    console.log('Auth Token:', token); // Lägg till detta för att debugga
 
     try {
       const response = await fetch('https://chatify-api.up.railway.app/messages', {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -141,6 +143,7 @@ const Chat = ({ authToken }) => {
           Authorization: `Bearer ${authToken}`,
           'Content-Type': 'application/json',
         },
+ 
       });
 
       if (!response.ok) throw new Error('Meddelandet kunde inte raderas');

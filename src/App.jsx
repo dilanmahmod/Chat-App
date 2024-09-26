@@ -4,12 +4,12 @@ import SideNav from './components/SideNav';
 import Login from './components/Login';
 import Chat from './components/Chat';
 import Register from './components/Register';
-import CsrfTokenProcider from './components/CsrfTokenProvider';
+import CsrfTokenProvider from './components/CsrfTokenProvider';
 import './index.css';
 
 // Komponent för att skydda rutter
-const AuthenticatedRoute = ({ component, isAuthenticated }) => {
-  return isAuthenticated ? component : <Navigate to="/login" />;
+const AuthenticatedRoute = ({ element, isAuthenticated }) => {
+  return isAuthenticated ? element : <Navigate to="/login" />;
 };
 
 // Komponent för att visa felmeddelanden
@@ -63,20 +63,23 @@ const App = () => {
     retrieveCsrfToken();
   }, []);
 
-  // Kontrollera laddningsstatus
+  // Kontrollera laddningsstatus och eventuella fel
   if (isLoading) {
     return <Loader />;
   }
 
+  if (errorMessage) {
+    return <ErrorDisplay message={errorMessage} />;
+  }
+
   return (
     <div>
-      <ErrorDisplay message={errorMessage} />
       <Router>
         <SideNav token={authToken} setToken={setAuthToken} />
         <Routes>
           <Route path="/" element={<Register csrfToken={csrfToken} />} />
           <Route path="/login" element={<Login setToken={setAuthToken} setUserId={setCurrentUserId} csrfToken={csrfToken} />} />
-          <Route path="/chat" element={<AuthenticatedRoute component={<Chat token={authToken} userId={currentUserId} />} isAuthenticated={!!authToken} />} />
+          <Route path="/chat" element={<AuthenticatedRoute element={<Chat token={authToken} userId={currentUserId} />} isAuthenticated={!!authToken} />} />
           {/* Omdirigera till inloggning om ingen token finns */}
           <Route path="*" element={<Navigate to={authToken ? "/chat" : "/login"} />} />
         </Routes>
@@ -86,4 +89,3 @@ const App = () => {
 };
 
 export default App;
-

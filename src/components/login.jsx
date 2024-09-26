@@ -6,7 +6,7 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
     username: "",
     password: "",
   });
-  const [errorMessage, setErrorMessage] = useState(""); // Bytt namn till errorMessage
+  const [errorMessage, setErrorMessage] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -24,11 +24,12 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            // ÄNDRING 1: Flyttade CSRF-token till headers
+            "CSRF-Token": csrfToken,
           },
           body: JSON.stringify({
             username: credentials.username,
             password: credentials.password,
-            csrfToken,
           }),
         }
       );
@@ -36,24 +37,26 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error("Felaktiga inloggningsuppgifter");
+        throw new Error(result.message || "Felaktiga inloggningsuppgifter");
       }
 
       const { token } = result;
       const decodedData = decodeJwt(token);
 
-      // Lagrar användardata i localStorage
+     
       localStorage.setItem("authToken", token);
       localStorage.setItem("userId", decodedData.id);
       localStorage.setItem("username", decodedData.user);
       localStorage.setItem("avatar", decodedData.avatar);
       localStorage.setItem("email", decodedData.email);
 
+      // Uppdatera state
       setToken(token);
       setUserId(decodedData.id);
       setErrorMessage("");
 
-      navigate("/profile");
+      // Navigera till profilsidan eller annan skyddad sida
+      navigate("/Chat");
     } catch (err) {
       console.error("Inloggningen misslyckades:", err);
       setErrorMessage(err.message);

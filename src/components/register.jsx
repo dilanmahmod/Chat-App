@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
+import '../css/Register.css'; 
+
 
 const Register = ({ csrfToken }) => {
   const [user, setUser] = useState({

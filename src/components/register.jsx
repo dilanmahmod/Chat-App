@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import '../css/Register.css'; 
 
-
 const Register = ({ csrfToken }) => {
   const [user, setUser] = useState({
     username: "",
@@ -13,13 +12,11 @@ const Register = ({ csrfToken }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
-  // Hanterar formulärinmatning
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUser((prevUser) => ({ ...prevUser, [name]: value }));
   };
 
-  // Hanterar registrering av ny användare
   const submitRegistration = (e) => {
     e.preventDefault();
 
@@ -27,7 +24,7 @@ const Register = ({ csrfToken }) => {
       username: user.username,
       password: user.password,
       email: user.email,
-      avatar: user.avatarUrl, // Avatar inkluderas i body
+      avatar: user.avatarUrl,
       csrfToken,
     };
 
@@ -43,7 +40,6 @@ const Register = ({ csrfToken }) => {
         if (!response.ok) {
           throw new Error(result.message || "Username or email already exists");
         }
-        // Spara användaruppgifter och skicka till login
         localStorage.setItem("registeredUser", user.username);
         localStorage.setItem("registeredEmail", user.email);
         navigate("/login", { state: { message: "Registration successful" } });

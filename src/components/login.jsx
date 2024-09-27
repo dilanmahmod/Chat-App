@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation, NavLink } from "react-router-dom";
+import '../css/Login.css'; 
 
 const Login = ({ setToken, setUserId, csrfToken }) => {
   const [credentials, setCredentials] = useState({
@@ -10,10 +11,8 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Hämtar meddelande från eventuell state-överföring
   const successMessage = location.state?.message;
 
-  // Hanterar login
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
 
@@ -24,7 +23,6 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // ÄNDRING 1: Flyttade CSRF-token till headers
             "CSRF-Token": csrfToken,
           },
           body: JSON.stringify({
@@ -37,33 +35,49 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Felaktiga inloggningsuppgifter");
+        const apiMessage = result.message || "Felaktiga inloggningsuppgifter";
+        if (apiMessage === "Invalid credentials") {
+          throw new Error("Ogiltiga inloggningsuppgifter. Kontrollera ditt användarnamn och lösenord.");
+        }
+        throw new Error(apiMessage);
       }
 
       const { token } = result;
       const decodedData = decodeJwt(token);
 
-     
       localStorage.setItem("authToken", token);
       localStorage.setItem("userId", decodedData.id);
       localStorage.setItem("username", decodedData.user);
       localStorage.setItem("avatar", decodedData.avatar);
       localStorage.setItem("email", decodedData.email);
 
-      // Uppdatera state
       setToken(token);
       setUserId(decodedData.id);
       setErrorMessage("");
 
-      // Navigera till profilsidan eller annan skyddad sida
-      navigate("/Chat");
+      if (!csrfToken) {
+        console.error('CSRF-token saknas');
+        setErrorMessage('CSRF-token saknas. Försök igen senare.');
+        return;
+      }
+
+      navigate("/Chat", {
+        state: {
+          authToken: token,
+          userId: decodedData.id,
+          csrfToken: csrfToken,
+        },
+      });
     } catch (err) {
       console.error("Inloggningen misslyckades:", err);
-      setErrorMessage(err.message);
+      setErrorMessage(
+        err.message === "Invalid credentials"
+          ? "Ogiltigt användarnamn eller lösenord. Försök igen."
+          : err.message
+      );
     }
   };
 
-  // Decodar JWT-token
   const decodeJwt = (token) => {
     try {
       const base64Url = token.split(".")[1];
@@ -81,7 +95,6 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
     }
   };
 
-  // Hanterar input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCredentials((prev) => ({
@@ -91,22 +104,17 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
-      style={{ backgroundImage: "url('/src/components/Assets/Register.svg')" }}
-    >
-      <div className="bg-white bg-opacity-70 backdrop-blur-md p-8 rounded-xl shadow-lg w-full max-w-lg">
-        <h1 className="text-2xl text-center font-semibold mb-6 text-gray-100 tracking-wide">
-          Logga In
-        </h1>
+    <div className="login-container">
+      <div className="login-form">
+        <h1 className="login-title">Logga In</h1>
         {successMessage && (
-          <p className="text-green-500 text-center mb-4">{successMessage}</p>
+          <p className="success-message">{successMessage}</p>
         )}
         {errorMessage && (
-          <p className="text-red-600 text-center mb-4">{errorMessage}</p>
+          <p className="error-message">{errorMessage}</p>
         )}
-        <form onSubmit={handleLoginSubmit} className="space-y-6">
-          <div className="flex flex-col">
+        <form onSubmit={handleLoginSubmit} className="form">
+          <div className="input-group">
             <input
               type="text"
               name="username"
@@ -114,10 +122,9 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
               value={credentials.username}
               onChange={handleInputChange}
               required
-              className="p-4 rounded-full bg-gray-700 text-white placeholder-gray-400 border border-gray-500"
             />
           </div>
-          <div className="flex flex-col">
+          <div className="input-group">
             <input
               type="password"
               name="password"
@@ -125,18 +132,14 @@ const Login = ({ setToken, setUserId, csrfToken }) => {
               value={credentials.password}
               onChange={handleInputChange}
               required
-              className="p-4 rounded-full bg-gray-700 text-white placeholder-gray-400 border border-gray-500"
             />
           </div>
-          <button
-            type="submit"
-            className="w-full py-3 text-white bg-green-600 rounded-full hover:bg-green-700"
-          >
+          <button type="submit" className="login-button">
             Logga In
           </button>
         </form>
         <NavLink to="/">
-          <button className="w-full mt-3 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700">
+          <button className="register-button">
             Har du inget konto? Registrera här!
           </button>
         </NavLink>

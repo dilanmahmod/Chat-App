@@ -4,15 +4,16 @@ import SideNav from './components/SideNav';
 import Login from './components/Login';
 import Chat from './components/Chat';
 import Register from './components/Register';
-import CsrfTokenProvider from './components/CsrfTokenProvider';
 import './index.css';
 
-// Komponent för att skydda rutter
-const AuthenticatedRoute = ({ element, isAuthenticated }) => {
-  return isAuthenticated ? element : <Navigate to="/login" />;
+const AuthenticatedRoute = ({ element: Component, isAuthenticated, ...rest }) => {
+  return isAuthenticated ? (
+    <Component {...rest} /> 
+  ) : (
+    <Navigate to="/login" />
+  );
 };
 
-// Komponent för att visa felmeddelanden
 const ErrorDisplay = ({ message }) => {
   if (!message) return null;
   return (
@@ -22,7 +23,6 @@ const ErrorDisplay = ({ message }) => {
   );
 };
 
-// Komponent för att visa laddningsstatus
 const Loader = () => (
   <div style={{ textAlign: 'center', padding: '1em' }}>
     <p>Laddar...</p>
@@ -36,13 +36,11 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  // Hantera lagring av token och userId direkt i useState-initialiseringen
   useEffect(() => {
     localStorage.setItem('token', authToken);
     localStorage.setItem('userId', currentUserId);
   }, [authToken, currentUserId]);
 
-  // Hämta CSRF-token med felhantering och laddningsstatus
   useEffect(() => {
     const retrieveCsrfToken = async () => {
       setIsLoading(true);
@@ -63,7 +61,6 @@ const App = () => {
     retrieveCsrfToken();
   }, []);
 
-  // Kontrollera laddningsstatus och eventuella fel
   if (isLoading) {
     return <Loader />;
   }
@@ -75,12 +72,22 @@ const App = () => {
   return (
     <div>
       <Router>
-        <SideNav token={authToken} setToken={setAuthToken} />
+        <SideNav token={authToken} setToken={setAuthToken} setUserId={setCurrentUserId} />
         <Routes>
           <Route path="/" element={<Register csrfToken={csrfToken} />} />
           <Route path="/login" element={<Login setToken={setAuthToken} setUserId={setCurrentUserId} csrfToken={csrfToken} />} />
-          <Route path="/chat" element={<AuthenticatedRoute element={<Chat token={authToken} userId={currentUserId} />} isAuthenticated={!!authToken} />} />
-          {/* Omdirigera till inloggning om ingen token finns */}
+          <Route 
+            path="/chat" 
+            element={
+              <AuthenticatedRoute 
+                element={Chat} 
+                isAuthenticated={!!authToken} 
+                authToken={authToken} 
+                userId={currentUserId} 
+                csrfToken={csrfToken} 
+              />
+            } 
+          />
           <Route path="*" element={<Navigate to={authToken ? "/chat" : "/login"} />} />
         </Routes>
       </Router>

@@ -42,3 +42,14 @@ body {
     align-self: flex-end;
     background-color: grey;
   }
+
+  .message.chat-left {
+    justify-content: flex-start;
+    text-align: left;
+  }
+  
+  .message.chat-right {
+    justify-content: flex-end;
+    text-align: right;
+  }
+  
